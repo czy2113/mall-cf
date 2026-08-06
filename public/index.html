@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>商城 · 顾客端</title>
+  <link rel="stylesheet" href="/customer.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand" id="shopName">商城</div>
+    <div class="search">
+      <input id="searchInput" type="search" placeholder="搜索商品" />
+    </div>
+    <div class="top-actions">
+      <a class="link" href="#/orders">我的订单</a>
+    </div>
+  </header>
+
+  <main id="app" class="app"><div class="loading">加载中…</div></main>
+
+  <!-- 购物车浮层 -->
+  <div id="cartDrawer" class="drawer-mask hide" onclick="if(event.target===this)toggleCart(false)">
+    <div class="drawer">
+      <div class="drawer-head">购物车 <button class="x" onclick="toggleCart(false)">×</button></div>
+      <div id="cartBody" class="drawer-body"></div>
+      <div class="drawer-foot" id="cartFoot"></div>
+    </div>
+  </div>
+
+  <!-- 通用弹窗 -->
+  <div id="modal" class="modal-mask hide" onclick="if(event.target===this)closeModal()">
+    <div class="modal" id="modalBox"></div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="#/" data-view="home">🏠<span>首页</span></a>
+    <a href="#/cart" data-view="cart">🛒<span>购物车</span></a>
+    <a href="#/orders" data-view="orders">📦<span>订单</span></a>
+    <a href="#/me" data-view="me">👤<span>我的</span></a>
+  </nav>
+
+  <div id="toast" class="toast hide"></div>
+  <script src="/customer.js"></script>
+</body>
+</html>
