@@ -55,4 +55,10 @@ app.get('/admin', async (c) => {
 
 // 根路径交由静态资源（public/index.html）托管，不再用 JSON 兜底，避免盖掉顾客端首页
 
+// 兜底：所有未匹配的请求（如 / 、/index.html 、/customer.css 、/customer.js 等）
+// 都交给 [assets] 静态资源处理，确保顾客端首页与静态文件能正常打开
+app.all('*', async (c) => {
+  return c.env.ASSETS.fetch(c.req.raw);
+});
+
 export default app;
