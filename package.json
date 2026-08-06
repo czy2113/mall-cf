@@ -1,0 +1,17 @@
+{
+  "name": "mall-cf",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "hono": "^4.6.0"
+  },
+  "devDependencies": {
+    "wrangler": "^3.78.0"
+  }
+}
