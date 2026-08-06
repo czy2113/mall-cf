@@ -1,0 +1,19 @@
+name = "mall-shop"
+main = "src/worker.js"
+compatibility_date = "2024-11-01"
+
+# 运行时变量（非机密，可放这里）。JWT_SECRET 正式上线建议改用 `wrangler secret put JWT_SECRET`（不进仓库）
+[vars]
+JWT_SECRET = "k9m2xQ7pLr4nV8wT3cB6hY1sD5fG0jA"
+PAYMENT_METHOD = "mock"
+
+# D1 数据库绑定
+[[d1_databases]]
+binding = "DB"
+database_name = "mall_db"
+database_id = "a70ebd53-7fa6-422c-97e6-4c06de990738"
+
+# 静态资源：把 public/ 托管为站点（顾客端 / 与 商家端 /admin 共享同一后端）
+[assets]
+directory = "public"
+not_found_handling = "404"
