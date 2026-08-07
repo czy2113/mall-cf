@@ -4,14 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "dev": "vercel dev",
+    "deploy": "vercel deploy --prod"
   },
   "dependencies": {
+    "@libsql/client": "^0.17.0",
     "bcryptjs": "^2.4.3",
     "hono": "^4.6.0"
-  },
-  "devDependencies": {
-    "wrangler": "^3.78.0"
   }
 }
