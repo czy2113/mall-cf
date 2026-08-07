@@ -1,10 +1,72 @@
-// src/db.js —— D1 帮助函数
-// 运行时不再建表（Cloudflare D1 的表由 migrations/0001_init.sql 通过 `wrangler d1 execute` 创建一次）。
-// 所有查询都是异步的：传入 D1Database 实例（c.env.DB）。
+// src/db.js —— 数据库层（libSQL / Turso 兼容）
+//
+// 为了把后端从 Cloudflare D1 平滑迁移到 Vercel + Turso（云端 SQLite），
+// 这里用一个「D1 兼容垫片」把 @libsql/client 包装成与 D1 完全一致的接口：
+//   db.prepare(sql).bind(...args).first() / .all() / .run()
+//   db.exec(multiStatementSql)
+// 这样所有 router 与业务模块（products/orders/payments...）的代码可以一行不改。
+//
+// 连接来源（优先级）：
+//   1. 环境变量 TURSO_URL + TURSO_AUTH_TOKEN（Turso 云端数据库，生产用）
+//   2. 缺省回退到本地文件 file:./mall_local.db（本地开发/测试用，无需任何 token）
 
-export function getDB(c) {
-  return c.env.DB;
+import { createClient } from '@libsql/client';
+
+let _client = null;
+
+export function getClient() {
+  if (!_client) {
+    const url = process.env.TURSO_URL || 'file:./mall_local.db';
+    const authToken = process.env.TURSO_AUTH_TOKEN || undefined;
+    _client = createClient({ url, authToken });
+  }
+  return _client;
 }
+
+// 把单条 SQL 包装成「D1 风格」的语句对象
+function createStatement(client, sql) {
+  let args = [];
+  const stmt = {
+    bind(...a) {
+      args = a;
+      return stmt;
+    },
+    async first() {
+      const res = await client.execute({ sql, args });
+      return res.rows.length ? res.rows[0] : null;
+    },
+    async all() {
+      const res = await client.execute({ sql, args });
+      // D1 的 .all() 返回 { results: [...] }，router 里普遍用 rows.results
+      return { results: res.rows, columns: res.columns };
+    },
+    async run() {
+      const res = await client.execute({ sql, args });
+      // D1 的 .run() 返回 { meta: { last_row_id, changes } }
+      return {
+        meta: {
+          last_row_id: Number(res.lastInsertRowid),
+          changes: res.rowsAffected,
+        },
+      };
+    },
+  };
+  return stmt;
+}
+
+// 兼容 D1 的「数据库对象」。不再从 c.env.DB 取，而是全局单例 client 的封装。
+export function getDB(c) {
+  const client = getClient();
+  return {
+    prepare: (sql) => createStatement(client, sql),
+    // schema.js 用 db.exec() 执行多语句建表/种子
+    async exec(sql) {
+      await client.executeMultiple(sql);
+    },
+  };
+}
+
+// ===== 以下辅助函数保持原签名，内部走上述兼容接口 =====
 
 export async function getRow(db, sql, params = []) {
   return db.prepare(sql).bind(...params).first();
