@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>商城 · 顾客端</title>
   <link rel="stylesheet" href="/customer.css" />
+  <style>#roleConflict{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px 22px;max-width:82%;text-align:center;font-size:14px;line-height:1.6;box-shadow:0 6px 24px rgba(0,0,0,.12);z-index:9999}</style>
 </head>
 <body>
   <header class="topbar">
@@ -41,6 +42,8 @@
   </nav>
 
   <div id="toast" class="toast hide"></div>
+  <div id="roleConflict" class="hide"></div>
+  <script src="/role-guard.js"></script>
   <script src="/customer.js"></script>
 </body>
 </html>
