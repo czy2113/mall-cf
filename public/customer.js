@@ -237,5 +237,10 @@ function route() {
 window.addEventListener('hashchange', route);
 $('#searchInput') && ($('#searchInput').oninput = debounce(() => { state.cat = ''; viewHome(); }, 400));
 function debounce(fn, t) { let id; return (...a) => { clearTimeout(id); id = setTimeout(() => fn(...a), t); }; }
-updateCartBadge();
-route();
+// 角色守卫：顾客端只接受 user 角色；若误持商家令牌则引导至商家端
+if (window.RoleGuard && !window.RoleGuard.enforceCustomer()) {
+  // 角色冲突，role-guard 已触发跳转
+} else {
+  updateCartBadge();
+  route();
+}
