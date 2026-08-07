@@ -31,7 +31,10 @@ function closeModal(){$('#modal').classList.add('hide');}
 window.closeModal=closeModal;
 
 // ---------- 启动 ----------
-if (TOKEN) boot(); else showLogin();
+// 角色守卫：商家端只接受 admin 角色；若误持顾客令牌则提示无法进入
+if (window.RoleGuard && !window.RoleGuard.enforceMerchant()) {
+  // 角色冲突，role-guard 已触发跳转
+} else if (TOKEN) { boot(); } else { showLogin(); }
 function showLogin(){ $('#loginView').classList.remove('hide'); $('#adminView').classList.add('hide');
   $('#loginForm').onsubmit = async (e)=>{ e.preventDefault();
     try{ const d=await api('POST','/auth/admin/login',{username:$('#aUser').value,password:$('#aPass').value});
